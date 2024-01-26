@@ -22,6 +22,11 @@ jobs:
         env:
           POSTGRES_PASSWORD: pgs3cr3t
           POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -39,8 +44,7 @@ jobs:
 
       - name: Wait for PostgreSQL to be ready
         run: |
-          # Attempt to connect to PostgreSQL until successful
-          until PGPASSWORD=pgs3cr3t psql -h localhost -U postgres -d testdb -c '\q'; do
+          while ! pg_isready -h localhost -p 5432 -U postgres; do
             echo "Waiting for PostgreSQL to start..."
             sleep 1
           done
@@ -50,3 +54,4 @@ jobs:
           nosetests
         env:
           DATABASE_URI: "postgresql://postgres:pgs3cr3t@localhost:5432/testdb"
+
