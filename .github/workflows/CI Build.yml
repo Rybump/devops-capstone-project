@@ -32,6 +32,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install PostgreSQL client tools
+        run: |
+          apt-get update
+          apt-get install -y postgresql-client
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip wheel
@@ -54,4 +59,3 @@ jobs:
           nosetests
         env:
           DATABASE_URI: "postgresql://postgres:pgs3cr3t@localhost:5432/testdb"
-
